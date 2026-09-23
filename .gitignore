@@ -1,0 +1,11 @@
+# Never commit the raw data - commit the downloader instead.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*.duckdb
+data/processed/*.parquet
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
