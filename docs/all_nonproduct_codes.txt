@@ -1,0 +1,35 @@
+┌──────────────┬─────────────────────────────────────┬───────┬─────────────┐
+│  stock_code  │         example_description         │ rows  │ total_value │
+│   varchar    │               varchar               │ int64 │   double    │
+├──────────────┼─────────────────────────────────────┼───────┼─────────────┤
+│ POST         │ POSTAGE                             │  2122 │    112341.0 │
+│ DOT          │ DOTCOM POSTAGE                      │  1446 │   322647.47 │
+│ M            │ Manual                              │  1421 │   -82796.32 │
+│ C2           │ CARRIAGE                            │   282 │     13386.0 │
+│ D            │ Discount                            │   177 │   -13484.54 │
+│ S            │ SAMPLES                             │   104 │     -6065.8 │
+│ BANK CHARGES │ Bank Charges                        │   102 │   -35562.63 │
+│ ADJUST       │ Adjustment by john on 26/01/2010 16 │    67 │     6835.24 │
+│ AMAZONFEE    │ AMAZON FEE                          │    43 │  -260763.58 │
+│ gift_0001_20 │ Dotcomgiftshop Gift Voucher £20.00  │    29 │      471.06 │
+│ gift_0001_30 │ Dotcomgiftshop Gift Voucher £30.00  │    29 │      610.09 │
+│ PADS         │ PADS TO MATCH ALL CUSHIONS          │    19 │      -36.58 │
+│ CRUK         │ CRUK Commission                     │    16 │    -7933.43 │
+│ gift_0001_10 │ Dotcomgiftshop Gift Voucher £10.00  │    16 │      126.21 │
+│ TEST001      │ This is a test product.             │    15 │       202.5 │
+│ gift_0001_50 │ Dotcomgiftshop Gift Voucher £50.00  │     8 │      253.59 │
+│ gift_0001_40 │ Dotcomgiftshop Gift Voucher £40.00  │     7 │      166.09 │
+│ B            │ Adjust bad debt                     │     6 │  -147614.08 │
+│ m            │ Manual                              │     5 │       15.05 │
+│ gift_0001_80 │ Dotcomgiftshop Gift Voucher £80.00  │     4 │         0.0 │
+│ SP1002       │ KID'S CHALKBOARD/EASEL              │     3 │       14.75 │
+│ ADJUST2      │ Adjustment by Peter on Jun 25 2010  │     3 │      731.05 │
+│ gift_0001_70 │ Dotcomgiftshop Gift Voucher £70.00  │     3 │       59.57 │
+│ TEST002      │ This is a test product.             │     2 │         1.0 │
+│ gift_0001_90 │ NULL                                │     2 │         0.0 │
+│ gift_0001_60 │ NULL                                │     2 │         0.0 │
+│ GIFT         │ NULL                                │     1 │         0.0 │
+│ C3           │ NULL                                │     1 │         0.0 │
+└──────────────┴─────────────────────────────────────┴───────┴─────────────┘
+  28 rows                                                        4 columns
+
