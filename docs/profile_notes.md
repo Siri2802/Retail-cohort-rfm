@@ -236,3 +236,17 @@ Honest retention curve (excluding Dec 2009):
 
 Headline: the business loses ~4 in 5 new customers after their first month,
 and even the ones who return keep drifting away over the year.
+
+### Step - 9 RFM Segmentation
+
+RFM results (5,832 customers, all 7 checks OK):
+- Champions: 21.3% of customers -> 68.6% of revenue
+- At Risk - High Value: 210 customers, GBP 851K, avg 9.6 orders,
+  338 days since last purchase -> the win-back target
+- Hibernating + Lost: 41% of customers, 7.4% of revenue
+- New / Promising: 503 customers, 1.5 orders avg -> where the month-1
+  retention cliff happens; getting a 2nd order is the biggest lever
+Fix impact vs answer key: At Risk - High Value avg orders 11.6 -> 9.6
+(cancellations were counted as orders); customer 18102 147 -> 145 orders.
+Caveats: segment thresholds are business conventions, not data-driven;
+Champions include the EIRE wholesale accounts.
