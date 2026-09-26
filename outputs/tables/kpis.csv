@@ -1,0 +1,2 @@
+net_revenue,gross_sales,returns_value,returns_pct_of_gross,orders,customers,avg_revenue_per_customer,median_revenue_per_customer,avg_orders_per_customer,pct_one_time_buyers,unattributed_revenue,pct_unattributed_revenue,first_day,last_day
+18926847.20,19643309.77,716462.57,3.65,39516,5832,2805.38,843.74,6.27,27.42,2568806.36,13.57,2009-12-01,2011-12-09

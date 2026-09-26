@@ -11,8 +11,10 @@ DB = ROOT / "data" / "processed" / "retail.duckdb"
 SQLDIR = ROOT / "sql"
 TBL = ROOT / "outputs" / "tables"
 
-STEPS = ["02_cohort_retention.sql", "03_rfm.sql"]
-EXPORTS = ["cohort_retention", "rfm"]
+STEPS = ["02_cohort_retention.sql", "03_rfm.sql",
+         "04_revenue_concentration.sql", "05_kpis.sql"]
+EXPORTS = ["cohort_retention", "rfm", "customer_revenue_ranked",
+           "revenue_concentration", "kpis"]
 
 # Each check is a query that must return 0 (= number of bad rows).
 CHECKS = {
@@ -39,6 +41,15 @@ CHECKS = {
     "rfm: identical frequency always gets the same f_score":
         """SELECT count(*) FROM (SELECT frequency FROM rfm
                                  GROUP BY frequency HAVING count(DISTINCT f_score) > 1)""",
+    # --- revenue concentration + KPIs ---
+    "concentration: deciles cover every RFM customer":
+        """SELECT abs((SELECT sum(customers) FROM revenue_concentration)
+                      - (SELECT count(*) FROM rfm))""",
+    "concentration: cumulative share ends at 100%":
+        """SELECT count(*) FROM revenue_concentration
+           WHERE revenue_decile = 10 AND cumulative_pct_of_revenue <> 100""",
+    "kpis: customer count matches RFM":
+        "SELECT abs(customers - (SELECT count(*) FROM rfm)) FROM kpis",
 }
 
 
@@ -64,7 +75,7 @@ def main() -> int:
         out = TBL / f"{t}.csv"
         con.execute(f"COPY {t} TO '{out}' (HEADER, DELIMITER ',')")
         n = con.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
-        print(f"  exported {t:<20} {n:>6,} rows -> {out.relative_to(ROOT)}")
+        print(f"  exported {t:<24} {n:>6,} rows -> {out.relative_to(ROOT)}")
 
     print("\n=== Checks ===")
     if not run_checks(con):
@@ -95,6 +106,19 @@ def main() -> int:
         GROUP BY segment
         ORDER BY revenue DESC
     """).df().to_string(index=False))
+
+    print("\n=== Revenue concentration (decile 1 = top 10% of customers) ===")
+    print(con.execute("""
+        SELECT revenue_decile, customers, decile_revenue,
+               pct_of_total_revenue, cumulative_pct_of_revenue
+        FROM revenue_concentration
+        ORDER BY revenue_decile
+    """).df().to_string(index=False))
+
+    print("\n=== KPIs ===")
+    kpis = con.execute("SELECT * FROM kpis").df().iloc[0]
+    for name, value in kpis.items():
+        print(f"  {name:<30} {value}")
 
     con.close()
     return 0
