@@ -237,7 +237,7 @@ Honest retention curve (excluding Dec 2009):
 Headline: the business loses ~4 in 5 new customers after their first month,
 and even the ones who return keep drifting away over the year.
 
-### Step - 9 RFM Segmentation
+### Step - 9(part 1)RFM Segmentation
 
 RFM results (5,832 customers, all 7 checks OK):
 - Champions: 21.3% of customers -> 68.6% of revenue
@@ -250,3 +250,62 @@ Fix impact vs answer key: At Risk - High Value avg orders 11.6 -> 9.6
 (cancellations were counted as orders); customer 18102 147 -> 145 orders.
 Caveats: segment thresholds are business conventions, not data-driven;
 Champions include the EIRE wholesale accounts.
+
+### Step - 9(part-2) Revenue concentration 
+
+## Step 9B - Revenue concentration + KPIs (all 10 checks OK)
+- Top 10% of customers (584) = 63.2% of customer revenue; top 20% = 76.7%;
+  bottom 50% = 6.6%.
+- Top single customer (18102) = GBP 578K = 3.5% of attributed revenue.
+- Mean revenue per customer GBP 2,805 vs median GBP 844 -> heavily skewed;
+  use the median for "typical customer".
+- Net revenue GBP 18.93M; returns = 3.65% of gross sales (GBP 716K).
+- One-time buyers 27.42% (answer key 24.18%); avg orders 6.27 (answer key
+  7.51) - counting cancellations as orders inflated orders by ~20%.
+- Biggest caveat: 13.57% of net revenue (GBP 2.57M) has no customer ID.
+  All customer-level results (cohorts, RFM, concentration) describe only
+  the other 86%.
+
+  ## Step 10 - Tests (25, all passing)
+
+File: tests/test_data_quality.py
+Run:  python src/03_clean.py && python src/04_analysis.py && python -m pytest tests/ -v
+Result: 25 passed.
+
+What they test (the DATA, not Python functions):
+1. Source      - raw row count = 1,067,371 (UCI published figure)
+2. Cleaning    - ledger reconciles; no duplicate business keys; Dec 2010
+                 overlap not double-counted; no unknown non-product codes;
+                 no write-offs; all prices > 0; money is DECIMAL; no float residue
+3. Cohorts     - no negative periods; period 0 = 100%; retention <= 100%;
+                 no missing zero-activity periods; partial Dec 2011 excluded
+4. RFM         - scores 1-5; tied customers get the same score (R, F, M);
+                 frequency excludes cancellations; one row per customer;
+                 monetary > 0
+5. Reconciling - deciles sum to 100%; RFM revenue = clean revenue;
+                 KPI customers = RFM customers; returns % is positive
+
+Answer-key test problems I fixed:
+- Its "balanced quintiles" test REQUIRES the NTILE tie bug - a test that
+  locks a flaw in. Replaced with "tied customers get the same score".
+- Its service-code test checked only 11 of the 28 junk codes. Replaced with
+  "any non-5-digit code must be a known product (DCGS*, SP*, PADS)" - this
+  also catches NEW junk codes that are not on the exclusion list.
+- Its unobservable-period test allowed the partial Dec 2011.
+Lesson: a wrong test is worse than no test - it makes a bug look verified.
+
+Broke it on purpose:
+Experiment 1 - DOUBLE instead of DECIMAL for money -> 5 tests failed:
+- decimal type check (line_revenue was DOUBLE)
+- float residue: 30 customer-months that should net to 0 did not
+- 4 phantom RFM customers with monetary 0 (bought and fully returned;
+  residue like 1e-14 passed the "> 0" filter)
+- RFM revenue vs clean revenue off by GBP 0.017 (rounding drift)
+- KPI customers 5,834 vs RFM 5,836 - same data, same "> 0" filter,
+  different answers, because float residue depends on the order of
+  parallel summation. With DECIMAL the arithmetic is exact.
+Reverted -> 25 passed.
+
+Experiment 2 - removed 'M' from the exclusion list ->
+test_no_unknown_non_product_codes_survive fails and names M and m.
+(Verified on sample data; optional to rerun on the full data.)
