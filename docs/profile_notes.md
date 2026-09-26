@@ -190,3 +190,29 @@ would merge them. Impact: 12,135 rows (~1.1%).
   My result (34,337) matches the README; the CSV is stale.
 - profile_raw.md "exact duplicate rows 32,907" counts duplicated GROUPS,
   not duplicate ROWS (computes "extra" but never sums it). Mislabelled.
+
+
+  ## Step 7 - Exclusion ledger
+Raw 1,067,371 -> duplicates -34,337 -> service codes -5,801
+-> write-offs -3,391 -> non-positive price -2,572 -> clean 1,021,270 (95.68%)
+
+Why ledger numbers are smaller than profiling numbers:
+the ledger is a waterfall - each row is counted under the FIRST rule
+that removes it, so nothing is counted twice.
+- Write-offs 3,457 -> 3,391: 64 were duplicates, 2 were service codes.
+  Check: 64 + 2 + 3,391 = 3,457.
+- Non-positive prices 6,207 -> 2,572: 188 duplicates, 56 service codes,
+  3,391 write-offs (all write-offs have price 0).
+  Check: 188 + 56 + 3,391 + 2,572 = 6,207.
+
+  ## Step 8 - Cohort retention
+Definitions: cohort = first net-positive month; retained = net-positive
+spend that month; denominator = period-0 size, fixed. No-ID customers excluded.
+Traps handled:
+1. Missing zeros -> complete cohort x period grid + LEFT JOIN
+2. Unobservable periods -> grid capped at each cohort's last observable month
+3. Partial last month -> Dec 2011 (9 days) excluded; last complete month = Nov 2011.
+   The answer key misses this: its Dec-2009 cohort drops to 19.53% in month 24
+   (Dec 2011) from ~30-40% - a data artifact, not churn.
+4. Float residue -> money stored as DECIMAL (Step 7)
+Output: 300 rows (24 cohorts, Dec 2009 - Nov 2011), all 4 checks OK.
