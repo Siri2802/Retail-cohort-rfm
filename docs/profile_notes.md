@@ -216,3 +216,23 @@ Traps handled:
    (Dec 2011) from ~30-40% - a data artifact, not churn.
 4. Float residue -> money stored as DECIMAL (Step 7)
 Output: 300 rows (24 cohorts, Dec 2009 - Nov 2011), all 4 checks OK.
+
+### Step 8 findings
+Checkpoints match answer key: Dec-2009 942/330/35.03%, Jan-2010 369/77/20.87%.
+
+Left-censoring: Dec 2009 cohort avg retention (months 1-12) = 38.06% vs
+18.16% for all later cohorts. Dec 2009 is the first month of data, so it
+labels long-standing customers as "new". Excluded from all benchmarks.
+
+Partial-month fix impact: later-cohort benchmark = 18.16% (mine) vs 17.6%
+(answer key). The only difference is excluding the 9-day Dec 2011, so the
+partial month was dragging the benchmark down by ~0.56 points.
+
+Honest retention curve (excluding Dec 2009):
+- Month 1: 20.67% -> ~79% of new customers do not return next month
+- Decays to 13.42% by month 10 (the pooled curve incl. Dec 2009 looked flat
+  at 20-25% - that flatness was the Dec 2009 contamination)
+- Month 12 spike to 18.44%: Christmas seasonality (gift shop)
+
+Headline: the business loses ~4 in 5 new customers after their first month,
+and even the ones who return keep drifting away over the year.
