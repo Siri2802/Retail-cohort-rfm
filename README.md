@@ -140,7 +140,7 @@ tied customers share an RFM score; RFM revenue equals clean revenue.
 ## Reproduce
 
 ```bash
-git clone https://github.com/<Siri2802>/retail-cohort-rfm.git
+git clone https://github.com/Siri2802/Retail-cohort-rfm.git
 cd retail-cohort-rfm
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
