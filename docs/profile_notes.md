@@ -309,3 +309,12 @@ Reverted -> 25 passed.
 Experiment 2 - removed 'M' from the exclusion list ->
 test_no_unknown_non_product_codes_survive fails and names M and m.
 (Verified on sample data; optional to rerun on the full data.)
+
+
+## Step 12B - Interactive dashboard
+Streamlit app (app.py) deployed at: https://retail-cohort-rfm.streamlit.app
+Reads only outputs/tables/*.csv, so it always matches the pipeline.
+Filters: country, RFM segment, cohort range, exclude Dec 2009.
+Filters choose customers; RFM scores are never re-ranked.
+Small-sample warning when a retention base is under 100 customers.
+tests/test_dashboard.py: unfiltered dashboard numbers = pipeline numbers (30 tests total).
