@@ -1,4 +1,5 @@
 # Customer retention, RFM & revenue concentration: Online Retail II
+**▶ Live interactive dashboard: [https://retail-cohort-rfm.streamlit.app](https://retail-cohort-rfm.streamlit.app)** (filter by country, segment and cohort)
 
 **The question:** for a UK online gift wholesaler with two years of transactions,
 *where does the revenue come from, and do customers come back?*
@@ -18,9 +19,9 @@
 | Median vs mean customer value | **£844** vs £2,805 (heavily skewed, so quote the median) |
 | Revenue with no customer ID | **13.6%** (£2.57M), invisible to every customer-level metric |
 
-Full interactive report: [`outputs/dashboard.html`](outputs/dashboard.html) (self-contained, open in any browser) ·
-Excel report: [`outputs/online_retail_customer_analysis.xlsx`](outputs/online_retail_customer_analysis.xlsx)
-
+**Interactive dashboard:** [https://retail-cohort-rfm.streamlit.app](https://retail-cohort-rfm.streamlit.app) ·
+**Static one-page report (works offline):** [`outputs/dashboard.html`](outputs/dashboard.html) ·
+**Excel report:** [`outputs/online_retail_customer_analysis.xlsx`](outputs/online_retail_customer_analysis.xlsx)
 ---
 
 ## Findings
@@ -119,7 +120,9 @@ Each of these produces a wrong answer, not an error.
    Fix: frequency counts purchase invoices only, and recency uses the last *purchase* date.
 
 ### Tests
-`tests/test_data_quality.py` contains 25 contract tests **on the data**, covering source,
+`tests/test_data_quality.py` contains 25 contract tests **on the data**, and
+`tests/test_dashboard.py` adds 5 more proving the interactive dashboard's unfiltered numbers equal the
+pipeline's exactly (30 in total), covering source,
 cleaning, cohorts, RFM, and reconciliation. Examples: the ledger reconciles; no unknown
 non-product code survives cleaning (this catches new junk codes, not just known ones);
 tied customers share an RFM score; RFM revenue equals clean revenue.
@@ -145,7 +148,9 @@ cd retail-cohort-rfm
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 make all          # download -> ingest -> profile -> clean -> analyse -> figures -> Excel -> dashboard -> tests
+make app          # open the interactive dashboard at http://localhost:8501
 ```
+
 Tested with Python 3.14, DuckDB 1.5.5, pandas 3.0.6. The raw file is downloaded from UCI
 and never committed. `make fresh` rebuilds everything from the raw file.
 
@@ -153,25 +158,31 @@ and never committed. `make fresh` rebuilds everything from the raw file.
 ```
 ├── Makefile                      one command reproduces everything
 ├── requirements.txt
+├── app.py                        interactive Streamlit dashboard
+├── app_logic.py                  dashboard calculations (same definitions as the SQL)
+├── .streamlit/config.toml        dashboard theme
 ├── sql/
 │   ├── 01_clean.sql              raw -> flagged -> clean, every rule commented
-│   ├── 02_cohort_retention.sql   complete grid, partial-month fix
+│   ├── 02_cohort_retention.sql   customer activity + complete cohort grid, partial-month fix
 │   ├── 03_rfm.sql                purchase-only frequency, tie-safe scoring
 │   ├── 04_revenue_concentration.sql
-│   └── 05_kpis.sql
+│   ├── 05_kpis.sql
+│   └── 06_customer_country.sql   one country per customer (dashboard filter)
 ├── src/
 │   ├── 00_download.py            fetch the source workbook
 │   ├── 01_ingest.py              Excel -> Parquet -> DuckDB, row-count check
 │   ├── 02_profile.py             reproducible raw-data profile -> docs/profile_raw.md
 │   ├── 03_clean.py               runs the cleaning SQL, prints the reconciling ledger
-│   ├── 04_analysis.py            runs the analysis SQL, 10 built-in checks
+│   ├── 04_analysis.py            runs the analysis SQL, 11 built-in checks
 │   ├── 05_figures.py / 06_excel.py / 07_dashboard.py
 │   └── headline.py               computes every number quoted in the outputs
-├── tests/test_data_quality.py    25 data-contract tests
+├── tests/
+│   ├── test_data_quality.py      25 data-contract tests
+│   └── test_dashboard.py         5 tests: dashboard = pipeline
 ├── docs/
 │   ├── profile_raw.md            generated profile of the raw data
 │   └── profile_notes.md          my analysis notes: every finding and decision
-└── outputs/                      tables, figures, Excel report, dashboard
+└── outputs/                      tables, figures, Excel report, static HTML report
 ```
 
 ## Data & credits
