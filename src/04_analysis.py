@@ -12,9 +12,11 @@ SQLDIR = ROOT / "sql"
 TBL = ROOT / "outputs" / "tables"
 
 STEPS = ["02_cohort_retention.sql", "03_rfm.sql",
-         "04_revenue_concentration.sql", "05_kpis.sql"]
+         "04_revenue_concentration.sql", "05_kpis.sql",
+         "06_customer_country.sql"]
 EXPORTS = ["cohort_retention", "rfm", "customer_revenue_ranked",
-           "revenue_concentration", "kpis"]
+           "revenue_concentration", "kpis",
+           "cohort_activity", "customer_country"]   # last two feed the dashboard
 
 # Each check is a query that must return 0 (= number of bad rows).
 CHECKS = {
@@ -50,6 +52,11 @@ CHECKS = {
            WHERE revenue_decile = 10 AND cumulative_pct_of_revenue <> 100""",
     "kpis: customer count matches RFM":
         "SELECT abs(customers - (SELECT count(*) FROM rfm)) FROM kpis",
+    # --- dashboard inputs ---
+    "dashboard: every RFM customer has exactly one country":
+        """SELECT abs((SELECT count(*) FROM rfm)
+                      - (SELECT count(*) FROM rfm JOIN customer_country USING (customer_id)))
+                  + (SELECT count(*) - count(DISTINCT customer_id) FROM customer_country)""",
 }
 
 

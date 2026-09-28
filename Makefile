@@ -1,8 +1,9 @@
 # Reproduce the whole project from nothing:   make all
 # Rebuild from the raw file (keeps the download):   make fresh
+# Open the interactive dashboard locally:          make app
 PY ?= python
 
-.PHONY: all data ingest profile clean analysis figures excel dashboard test fresh
+.PHONY: all data ingest profile clean analysis figures excel dashboard test fresh app
 
 all: ingest profile clean analysis figures excel dashboard test
 
@@ -15,5 +16,7 @@ figures:     ; $(PY) src/05_figures.py
 excel:       ; $(PY) src/06_excel.py
 dashboard:   ; $(PY) src/07_dashboard.py
 test:        ; $(PY) -m pytest tests/ -q
+
+app:         ; streamlit run app.py
 
 fresh:       ; rm -f data/processed/retail.duckdb data/processed/raw_invoices.parquet && $(MAKE) all
